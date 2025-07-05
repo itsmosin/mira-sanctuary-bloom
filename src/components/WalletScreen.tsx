@@ -117,8 +117,6 @@ interface ChatMode {
   placeholder: string;
 }
 
-const BookOpen = () => null;
-
 export const WalletScreen = ({ onNavigate }: WalletScreenProps) => {
   const [activePathIndex, setActivePathIndex] = useState(0);
   const [activeTab, setActiveTab] = useState('received');
