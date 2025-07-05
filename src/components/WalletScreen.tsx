@@ -1,354 +1,391 @@
-
-import { useState } from 'react';
-import { ArrowUpRight, ArrowDownLeft, Shield, Eye, EyeOff, MoreHorizontal, Home, TrendingUp, AlertTriangle, Heart, BookOpen, Briefcase, Info, Plus, Send, Wallet } from 'lucide-react';
+import React, { useState } from 'react';
+import { Flower2, Shield, Heart, Wallet, MapPin, Lock, CheckCircle, ArrowRight, MessageCircle, Trophy, Clock, TrendingUp, Lightbulb } from 'lucide-react';
 
 interface WalletScreenProps {
-  onNavigate: (screen: 'wallet' | 'progress' | 'emergency') => void;
+  onNavigate: (screen: string) => void;
 }
 
-export const WalletScreen = ({ onNavigate }: WalletScreenProps) => {
-  const [activeTab, setActiveTab] = useState<'received' | 'spent' | 'locked'>('received');
-  const [balanceVisible, setBalanceVisible] = useState(true);
-  const [showSuggestedActions, setShowSuggestedActions] = useState(true);
-  const balance = 247.50;
-  const healingCredits = 28;
-  const milestonesCompleted = 3;
+const pathOptions = [
+  {
+    id: 'therapy',
+    title: 'Emotional Healing',
+    description: 'Connect with therapists and support groups',
+    icon: Heart,
+    color: 'text-rose-500',
+    gradient: 'from-rose-400 to-rose-600',
+    cta: 'Start healing'
+  },
+  {
+    id: 'learning',
+    title: 'Skills & Education',
+    description: 'Access courses and workshops to build new skills',
+    icon: BookOpen,
+    color: 'text-blue-500',
+    gradient: 'from-blue-400 to-blue-600',
+    cta: 'Begin learning'
+  },
+  {
+    id: 'shelter',
+    title: 'Safe Housing',
+    description: 'Find temporary or permanent housing options',
+    icon: MapPin,
+    color: 'text-green-500',
+    gradient: 'from-green-400 to-green-600',
+    cta: 'Find shelter'
+  }
+];
 
-  console.log('Wallet screen - active tab:', activeTab);
-
-  // Program pathways
-  const programPaths = [
+const transactionHistory = {
+  received: [
     {
-      id: 'wellness',
-      label: 'Wellness Support',
-      icon: '💙',
-      cta: 'Start Session',
-      description: 'Mental Health & Therapy',
-      status: 'Active'
+      title: 'Emergency Grant',
+      description: 'Received from MIRA Fund',
+      amount: '+ $100.00',
+      date: 'July 8, 2024',
+      icon: Heart,
+      color: 'bg-rose-100'
     },
     {
-      id: 'education',
-      label: 'Skill Development',
-      icon: '📚',
-      cta: 'View Courses',
-      description: 'Education & Training',
-      status: 'Available'
-    },
-    {
-      id: 'safety',
-      label: 'Safety Planning',
-      icon: '🛡',
-      cta: 'Setup Protection',
-      description: 'Emergency Protocols',
-      status: 'Recommended'
-    },
-    {
-      id: 'opportunities',
-      label: 'Income Generation',
-      icon: '💼',
-      cta: 'Browse Jobs',
-      description: 'Verified Opportunities',
-      status: 'Available'
+      title: 'Skills Workshop',
+      description: 'Payment from Learn & Earn',
+      amount: '+ $50.00',
+      date: 'July 5, 2024',
+      icon: BookOpen,
+      color: 'bg-blue-100'
     }
-  ];
+  ],
+  spent: [
+    {
+      title: 'Grocery Purchase',
+      description: 'Spent at Safeway',
+      amount: '- $32.50',
+      date: 'July 7, 2024',
+      icon: Wallet,
+      color: 'bg-purple-100'
+    },
+    {
+      title: 'Therapy Session',
+      description: 'Paid to Dr. Emily Carter',
+      amount: '- $60.00',
+      date: 'July 3, 2024',
+      icon: Heart,
+      color: 'bg-rose-100'
+    }
+  ],
+  protected: [
+    {
+      title: 'Account Protection',
+      description: 'Emergency fund locked',
+      amount: '+ $247.50',
+      date: 'July 1, 2024',
+      icon: Shield,
+      color: 'bg-green-100'
+    }
+  ]
+};
 
-  const quickActions = [
-    'Complete your security setup to unlock additional features',
-    'Add a trusted contact for emergency situations',
-    'Finish onboarding to access your full grant allocation'
-  ];
+const suggestedActions = [
+  {
+    text: 'Complete your SafeID verification to unlock additional benefits'
+  },
+  {
+    text: 'Explore available therapy sessions in your area'
+  },
+  {
+    text: 'Enroll in a budgeting workshop to manage your funds effectively'
+  }
+];
 
-  const transactions = {
-    received: [
-      { id: 1, amount: 150.00, from: 'MIRA Foundation Grant', date: '2 days ago', type: 'grant', status: 'Completed' },
-      { id: 2, amount: 97.50, from: 'Skills Milestone Reward', date: '1 week ago', type: 'achievement', status: 'Completed' },
-    ],
-    spent: [
-      { id: 3, amount: 45.00, for: 'Essential Supplies', date: 'Yesterday', type: 'essential', status: 'Completed' },
-      { id: 4, amount: 25.00, for: 'Transportation', date: '3 days ago', type: 'transport', status: 'Completed' },
-    ],
-    locked: [
-      { id: 5, amount: 100.00, for: 'Emergency Reserve Fund', date: 'Auto-allocated', type: 'reserve', status: 'Protected' },
-      { id: 6, amount: 50.00, for: 'Program Completion Bonus', date: 'Scheduled Release', type: 'milestone', status: 'Pending' },
-    ]
+interface ChatScreenProps {
+  onNavigate: (screen: string) => void;
+}
+
+interface Message {
+  id: string;
+  content: string;
+  sender: 'user' | 'mira';
+  timestamp: Date;
+  mode?: string;
+}
+
+interface ChatMode {
+  id: string;
+  name: string;
+  icon: any;
+  color: string;
+  description: string;
+  placeholder: string;
+}
+
+const BookOpen = () => null;
+
+export const WalletScreen = ({ onNavigate }: WalletScreenProps) => {
+  const [activePathIndex, setActivePathIndex] = useState(0);
+  const [activeTab, setActiveTab] = useState('received');
+
+  const handlePathClick = (index: number) => {
+    setActivePathIndex(index);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navigation Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex justify-between items-center max-w-6xl mx-auto">
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => onNavigate('wallet')}
-              className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 transition-colors"
-            >
-              <Wallet className="w-4 h-4" />
-              <span className="font-medium">Dashboard</span>
-            </button>
-            
-            <div className="h-4 w-px bg-gray-300"></div>
-            
-            <button
-              onClick={() => onNavigate('progress')}
-              className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
-            >
-              <TrendingUp className="w-4 h-4" />
-              <span className="font-medium">Progress</span>
-              {milestonesCompleted > 0 && (
-                <span className="ml-2 px-2 py-1 text-xs bg-green-100 text-green-700 rounded-full">
-                  {milestonesCompleted}
-                </span>
-              )}
-            </button>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-rose-50 to-amber-50">
+      {/* Enhanced Header with Your Path */}
+      <div className="bg-white/80 backdrop-blur-sm border-b border-purple-100 sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-400 to-rose-400 flex items-center justify-center shadow-lg">
+                  <Flower2 className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-rose-500 bg-clip-text text-transparent">
+                    MIRA
+                  </h1>
+                  <p className="text-sm text-purple-600">Your Sanctuary</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Your Path Progress */}
+            <div className="hidden md:flex items-center space-x-6 bg-gradient-to-r from-purple-100 to-rose-100 px-6 py-3 rounded-full">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-medium text-purple-700">Your Path:</span>
+                <div className="flex items-center space-x-1">
+                  <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                  <div className="w-8 h-0.5 bg-purple-200"></div>
+                  <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                  <div className="w-8 h-0.5 bg-gray-200"></div>
+                  <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+                </div>
+              </div>
+              <div className="flex items-center space-x-1 bg-purple-200 px-3 py-1 rounded-full">
+                <Trophy className="w-3 h-3 text-purple-600" />
+                <span className="text-xs font-medium text-purple-700">3 Milestones</span>
+              </div>
+            </div>
+
+            {/* Navigation Actions */}
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={() => onNavigate('chat')}
+                className="flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-rose-500 text-white px-4 py-2 rounded-full hover:from-purple-600 hover:to-rose-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span className="text-sm font-medium">Chat with MIRA</span>
+              </button>
+              <button
+                onClick={() => onNavigate('emergency')}
+                className="p-2 text-gray-600 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+              >
+                <Shield className="w-5 h-5" />
+              </button>
+            </div>
           </div>
-          
-          <button
-            onClick={() => onNavigate('emergency')}
-            className="p-2 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors"
-          >
-            <AlertTriangle className="w-5 h-5" />
-          </button>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
-          {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content - Balance & Actions */}
           <div className="lg:col-span-2 space-y-6">
-            
-            {/* Balance Overview */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <div className="flex justify-between items-center mb-6">
+            {/* Balance Card - Enhanced with purple theme */}
+            <div className="bg-gradient-to-r from-purple-500 to-rose-500 rounded-2xl p-8 text-white shadow-xl">
+              <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900">Account Balance</h2>
-                  <p className="text-sm text-gray-600 mt-1">Available funds for approved expenses</p>
+                  <p className="text-purple-100 text-sm font-medium">Your Safe Balance</p>
+                  <h2 className="text-4xl font-bold">$247.50</h2>
+                  <p className="text-purple-100 text-sm mt-1">USDC • No gas fees needed</p>
                 </div>
-                <button
-                  onClick={() => setBalanceVisible(!balanceVisible)}
-                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  {balanceVisible ? <Eye className="w-4 h-4 text-gray-500" /> : <EyeOff className="w-4 h-4 text-gray-500" />}
-                </button>
+                <div className="text-right">
+                  <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3">
+                    <Wallet className="w-8 h-8 text-white mb-2" />
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  </div>
+                </div>
               </div>
               
-              <div className="mb-6">
-                <div className="text-3xl font-bold text-gray-900 mb-2">
-                  {balanceVisible ? `$${balance.toFixed(2)}` : '••••••'}
-                  <span className="text-lg font-normal text-gray-500 ml-2">USDC</span>
+              <div className="grid grid-cols-2 gap-4 mt-6">
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                  <p className="text-purple-100 text-xs">Spending Rules</p>
+                  <p className="text-white text-sm font-medium">Health, Education & Safety</p>
                 </div>
-                <div className="flex items-center space-x-4 text-sm text-gray-600">
-                  <div className="flex items-center space-x-1">
-                    <div className="w-2 h-2 rounded-full bg-green-400"></div>
-                    <span>Health, Education & Essentials</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <div className="w-2 h-2 rounded-full bg-blue-400"></div>
-                    <span>Next funding: July 10</span>
-                  </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                  <p className="text-purple-100 text-xs">Next Grant</p>
+                  <p className="text-white text-sm font-medium">July 15 • $50</p>
                 </div>
-              </div>
-
-              <div className="bg-purple-50 p-4 rounded-lg mb-6 flex items-start space-x-3">
-                <Info className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="text-sm text-purple-800 font-medium mb-1">Gasless Transactions</p>
-                  <p className="text-xs text-purple-700">No transaction fees. Your funds are automatically protected.</p>
-                </div>
-              </div>
-
-              {/* Quick Actions */}
-              <div className="flex space-x-3">
-                <button className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2">
-                  <Send className="w-4 h-4" />
-                  <span>Transfer</span>
-                </button>
-                <button className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2">
-                  <Plus className="w-4 h-4" />
-                  <span>Request</span>
-                </button>
-                <button className="px-4 py-3 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">
-                  <MoreHorizontal className="w-4 h-4" />
-                </button>
               </div>
             </div>
 
-            {/* Program Pathways */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Available Programs</h3>
-              <p className="text-sm text-gray-600 mb-6">Choose your path to financial independence</p>
+            {/* Recovery Path - Enhanced */}
+            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
+              <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+                <Heart className="w-5 h-5 text-rose-500 mr-2" />
+                Your Recovery Path
+              </h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {programPaths.map((path) => (
-                  <div
-                    key={path.id}
-                    className="p-4 rounded-lg border border-gray-200 hover:border-purple-200 hover:bg-purple-50/50 transition-all duration-200 cursor-pointer group"
-                  >
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="text-2xl">{path.icon}</div>
-                      <span className={`px-2 py-1 text-xs rounded-full ${
-                        path.status === 'Active' ? 'bg-green-100 text-green-700' :
-                        path.status === 'Recommended' ? 'bg-amber-100 text-amber-700' :
-                        'bg-gray-100 text-gray-600'
+                {pathOptions.map((option, index) => {
+                  const Icon = option.icon;
+                  const isActive = activePathIndex === index;
+                  
+                  return (
+                    <button
+                      key={option.id}
+                      onClick={() => handlePathClick(index)}
+                      className={`p-6 rounded-xl text-left transition-all duration-200 border-2 ${
+                        isActive
+                          ? `bg-gradient-to-r ${option.gradient} text-white border-transparent shadow-lg`
+                          : 'bg-white border-gray-200 hover:border-purple-300 hover:shadow-md'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3 mb-3">
+                        <Icon className={`w-6 h-6 ${isActive ? 'text-white' : option.color}`} />
+                        <h4 className={`font-semibold ${isActive ? 'text-white' : 'text-gray-900'}`}>
+                          {option.title}
+                        </h4>
+                      </div>
+                      <p className={`text-sm mb-4 ${isActive ? 'text-white/90' : 'text-gray-600'}`}>
+                        {option.description}
+                      </p>
+                      <div className={`flex items-center text-sm font-medium ${
+                        isActive ? 'text-white' : option.color
                       }`}>
-                        {path.status}
-                      </span>
-                    </div>
-                    <h4 className="font-medium text-gray-900 mb-1">{path.description}</h4>
-                    <p className="text-sm text-gray-600 mb-3">{path.label}</p>
-                    <button className="text-sm text-purple-600 group-hover:text-purple-700 font-medium">
-                      {path.cta} →
+                        <span>{option.cta}</span>
+                        <ArrowRight className="w-4 h-4 ml-1" />
+                      </div>
                     </button>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
-            {/* Transaction History */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-6">Transaction History</h3>
-              
-              <div className="flex space-x-1 mb-6 bg-gray-100 p-1 rounded-lg">
-                {[
-                  { key: 'received', label: 'Received' },
-                  { key: 'spent', label: 'Spent' },
-                  { key: 'locked', label: 'Reserved' }
-                ].map((tab) => (
-                  <button
-                    key={tab.key}
-                    onClick={() => setActiveTab(tab.key as any)}
-                    className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                      activeTab === tab.key
-                        ? 'bg-white text-gray-900 shadow-sm'
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    {tab.label}
-                  </button>
-                ))}
+            {/* Transaction History - Enhanced */}
+            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-semibold text-gray-900 flex items-center">
+                  <Clock className="w-5 h-5 text-purple-500 mr-2" />
+                  Recent Activity
+                </h3>
+                <div className="flex bg-purple-100 rounded-lg p-1">
+                  {['Received', 'Spent', 'Protected'].map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab.toLowerCase())}
+                      className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                        activeTab === tab.toLowerCase()
+                          ? 'bg-white text-purple-700 shadow-sm'
+                          : 'text-purple-600 hover:text-purple-700'
+                      }`}
+                    >
+                      {tab}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div className="space-y-3">
-                {transactions[activeTab].map((transaction) => (
-                  <div key={transaction.id} className="flex items-center justify-between p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="font-medium text-gray-900">
-                          {'amount' in transaction ? `$${transaction.amount.toFixed(2)}` : ''}
-                        </div>
-                        <div className={`px-2 py-1 rounded-full text-xs ${
-                          transaction.status === 'Completed' ? 'bg-green-100 text-green-700' :
-                          transaction.status === 'Protected' ? 'bg-blue-100 text-blue-700' :
-                          'bg-amber-100 text-amber-700'
-                        }`}>
-                          {transaction.status}
-                        </div>
+                {transactionHistory[activeTab as keyof typeof transactionHistory].map((transaction, index) => (
+                  <div key={index} className="flex items-center justify-between p-4 bg-white/50 rounded-lg hover:bg-white/70 transition-colors">
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${transaction.color}`}>
+                        <transaction.icon className="w-5 h-5 text-white" />
                       </div>
-                      <div className="text-sm text-gray-600">
-                        {'from' in transaction ? transaction.from : transaction.for}
+                      <div>
+                        <p className="font-medium text-gray-900">{transaction.title}</p>
+                        <p className="text-sm text-gray-600">{transaction.description}</p>
                       </div>
-                      <div className="text-xs text-gray-500 mt-1">
-                        {transaction.date}
-                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className={`font-semibold ${transaction.amount.startsWith('+') ? 'text-green-600' : 'text-gray-900'}`}>
+                        {transaction.amount}
+                      </p>
+                      <p className="text-xs text-gray-500">{transaction.date}</p>
                     </div>
                   </div>
                 ))}
-                
-                {transactions[activeTab].length === 0 && (
-                  <div className="text-center py-8 text-gray-500">
-                    <Heart className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                    <p className="text-sm">No transactions yet</p>
-                  </div>
-                )}
               </div>
             </div>
           </div>
 
           {/* Sidebar */}
           <div className="space-y-6">
-            
-            {/* Progress Summary */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Progress Overview</h3>
+            {/* Progress Tracking - Enhanced */}
+            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <TrendingUp className="w-5 h-5 text-green-500 mr-2" />
+                Your Progress
+              </h3>
               
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                      <Heart className="w-5 h-5 text-purple-600" />
-                    </div>
-                    <div>
-                      <div className="font-medium text-gray-900">Wellness Credits</div>
-                      <div className="text-xs text-gray-600">Program engagement</div>
-                    </div>
+              <div className="space-y-6">
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm text-gray-600">Healing Credits</span>
+                    <span className="text-lg font-bold text-rose-500">28</span>
                   </div>
-                  <div className="text-xl font-semibold text-purple-600">{healingCredits}</div>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                      <Shield className="w-5 h-5 text-green-600" />
-                    </div>
-                    <div>
-                      <div className="font-medium text-gray-900">Support Received</div>
-                      <div className="text-xs text-gray-600">Total funding</div>
-                    </div>
+                  <div className="w-full bg-rose-100 rounded-full h-2">
+                    <div className="bg-gradient-to-r from-rose-400 to-rose-600 h-2 rounded-full" style={{width: '70%'}}></div>
                   </div>
-                  <div className="text-xl font-semibold text-green-600">${balance.toFixed(0)}</div>
                 </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
-                      <TrendingUp className="w-5 h-5 text-amber-600" />
-                    </div>
-                    <div>
-                      <div className="font-medium text-gray-900">Milestones</div>
-                      <div className="text-xs text-gray-600">Completed goals</div>
-                    </div>
+                
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm text-gray-600">Total Aid Received</span>
+                    <span className="text-lg font-bold text-green-500">$247.50</span>
                   </div>
-                  <div className="text-xl font-semibold text-amber-600">{milestonesCompleted}</div>
+                  <div className="w-full bg-green-100 rounded-full h-2">
+                    <div className="bg-gradient-to-r from-green-400 to-green-600 h-2 rounded-full" style={{width: '60%'}}></div>
+                  </div>
                 </div>
-              </div>
-
-              <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-                <p className="text-xs text-blue-800">
-                  💡 Your progress can be privately verified for opportunities
-                </p>
+                
+                <div className="bg-gradient-to-r from-purple-100 to-rose-100 rounded-lg p-4">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Trophy className="w-4 h-4 text-purple-600" />
+                    <span className="text-sm font-medium text-purple-700">Milestones</span>
+                  </div>
+                  <p className="text-2xl font-bold text-purple-900">3 Completed</p>
+                  <p className="text-xs text-purple-600 mt-1">
+                    Share progress privately with sponsors or job platforms
+                  </p>
+                </div>
               </div>
             </div>
 
-            {/* Quick Actions */}
-            {showSuggestedActions && (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Recommended Actions</h3>
-                
-                <div className="space-y-3">
-                  {quickActions.map((action, index) => (
-                    <div key={index} className="p-3 rounded-lg bg-gray-50 border border-gray-200">
-                      <p className="text-sm text-gray-700 mb-3">{action}</p>
-                      <div className="flex space-x-2">
-                        <button className="text-xs text-gray-500 hover:text-gray-700 px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
-                          Later
-                        </button>
-                        <button className="text-xs text-white bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded-md transition-colors">
-                          Complete
-                        </button>
-                      </div>
+            {/* Suggested Actions - Enhanced */}
+            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <Lightbulb className="w-5 h-5 text-amber-500 mr-2" />
+                Gentle Nudges
+              </h3>
+              
+              <div className="space-y-4">
+                {suggestedActions.map((action, index) => (
+                  <div key={index} className="bg-white/50 rounded-lg p-4 border-l-4 border-purple-300">
+                    <p className="text-sm text-gray-700 mb-3">{action.text}</p>
+                    <div className="flex space-x-2">
+                      <button className="px-3 py-1 bg-purple-100 text-purple-700 text-xs rounded-full hover:bg-purple-200 transition-colors">
+                        Okay, I'll do it
+                      </button>
+                      <button className="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded-full hover:bg-gray-200 transition-colors">
+                        Not now
+                      </button>
                     </div>
-                  ))}
-                </div>
-
-                <button
-                  onClick={() => setShowSuggestedActions(false)}
-                  className="w-full mt-4 text-xs text-gray-500 hover:text-gray-700 py-2 transition-colors"
-                >
-                  Hide recommendations
-                </button>
+                  </div>
+                ))}
               </div>
-            )}
+            </div>
+
+            {/* Support Access */}
+            <div className="bg-gradient-to-r from-purple-100 to-rose-100 rounded-2xl p-6 shadow-lg">
+              <h3 className="text-lg font-semibold text-purple-900 mb-3">24/7 Support</h3>
+              <p className="text-sm text-purple-700 mb-4">MIRA is always here when you need guidance</p>
+              <button
+                onClick={() => onNavigate('chat')}
+                className="w-full bg-gradient-to-r from-purple-500 to-rose-500 text-white py-3 px-4 rounded-xl font-medium hover:from-purple-600 hover:to-rose-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+              >
+                Start Conversation
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -4,8 +4,9 @@ import { WelcomeScreen } from '@/components/WelcomeScreen';
 import { WalletScreen } from '@/components/WalletScreen';
 import { ProgressScreen } from '@/components/ProgressScreen';
 import { EmergencyScreen } from '@/components/EmergencyScreen';
+import { ChatScreen } from '@/components/ChatScreen';
 
-type Screen = 'welcome' | 'wallet' | 'progress' | 'emergency';
+type Screen = 'welcome' | 'wallet' | 'progress' | 'emergency' | 'chat';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
@@ -28,14 +29,16 @@ const Index = () => {
         return <ProgressScreen onNavigate={setCurrentScreen} />;
       case 'emergency':
         return <EmergencyScreen onNavigate={setCurrentScreen} />;
+      case 'chat':
+        return <ChatScreen onNavigate={setCurrentScreen} />;
       default:
         return <WelcomeScreen onSetupComplete={handleSetupComplete} />;
     }
   };
 
   return (
-    <div className="min-h-screen mira-gradient relative overflow-hidden">
-      {/* Subtle background elements */}
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-rose-50 to-amber-50 relative overflow-hidden">
+      {/* Subtle background elements - restored original style */}
       <div className="absolute inset-0 opacity-30">
         <div className="absolute top-10 left-10 w-32 h-32 bg-purple-200/20 rounded-full blur-xl animate-gentle-pulse"></div>
         <div className="absolute bottom-20 right-20 w-40 h-40 bg-rose-200/20 rounded-full blur-xl animate-gentle-pulse" style={{ animationDelay: '1s' }}></div>
