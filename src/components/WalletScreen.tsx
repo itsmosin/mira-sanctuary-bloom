@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Flower2, Shield, Heart, Wallet, MapPin, Lock, CheckCircle, ArrowRight, MessageCircle, Trophy, Clock, TrendingUp, Lightbulb } from 'lucide-react';
+import { Flower2, Shield, Heart, Wallet, MapPin, Lock, CheckCircle, ArrowRight, MessageCircle, Trophy, Clock, TrendingUp, Lightbulb, BookOpen } from 'lucide-react';
 
 interface WalletScreenProps {
   onNavigate: (screen: string) => void;

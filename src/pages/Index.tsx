@@ -19,18 +19,22 @@ const Index = () => {
     setCurrentScreen('wallet');
   };
 
+  const handleNavigate = (screen: string) => {
+    setCurrentScreen(screen as Screen);
+  };
+
   const renderScreen = () => {
     switch (currentScreen) {
       case 'welcome':
         return <WelcomeScreen onSetupComplete={handleSetupComplete} />;
       case 'wallet':
-        return <WalletScreen onNavigate={setCurrentScreen} />;
+        return <WalletScreen onNavigate={handleNavigate} />;
       case 'progress':
-        return <ProgressScreen onNavigate={setCurrentScreen} />;
+        return <ProgressScreen onNavigate={handleNavigate} />;
       case 'emergency':
-        return <EmergencyScreen onNavigate={setCurrentScreen} />;
+        return <EmergencyScreen onNavigate={handleNavigate} />;
       case 'chat':
-        return <ChatScreen onNavigate={setCurrentScreen} />;
+        return <ChatScreen onNavigate={handleNavigate} />;
       default:
         return <WelcomeScreen onSetupComplete={handleSetupComplete} />;
     }
