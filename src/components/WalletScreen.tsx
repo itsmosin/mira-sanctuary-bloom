@@ -71,27 +71,40 @@ export const WalletScreen = ({ onNavigate }: WalletScreenProps) => {
 
   return (
     <div className="min-h-screen p-6 bg-gradient-to-br from-purple-50/30 to-rose-50/30">
-      {/* Navigation */}
+      {/* Enhanced Navigation */}
       <div className="flex justify-between items-center mb-8">
-        <div className="flex space-x-4">
+        <div className="flex items-center space-x-3">
           <button
             onClick={() => onNavigate('wallet')}
-            className="flex items-center space-x-2 px-4 py-2 rounded-full bg-purple-100 text-purple-700"
+            className="flex items-center space-x-2 px-5 py-3 rounded-full bg-purple-100 text-purple-700 shadow-sm"
           >
             <Home className="w-4 h-4" />
             <span className="text-sm font-medium">My Safe Space</span>
           </button>
+          
+          <div className="flex items-center space-x-2 text-purple-300">
+            <div className="w-1 h-1 rounded-full bg-purple-300"></div>
+            <div className="w-1 h-1 rounded-full bg-purple-300"></div>
+            <div className="w-1 h-1 rounded-full bg-purple-300"></div>
+          </div>
+          
           <button
             onClick={() => onNavigate('progress')}
-            className="flex items-center space-x-2 px-4 py-2 rounded-full bg-white/50 text-gray-600 hover:bg-white/80"
+            className="flex items-center space-x-2 px-5 py-3 rounded-full bg-gradient-to-r from-rose-50 to-purple-50 text-purple-600 hover:from-rose-100 hover:to-purple-100 transition-all duration-300 shadow-sm border border-purple-100"
           >
             <TrendingUp className="w-4 h-4" />
-            <span className="text-sm">My Path</span>
+            <span className="text-sm font-medium">Your Path</span>
+            <div className="flex items-center space-x-1 ml-2">
+              <div className="w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center">
+                <span className="text-xs font-medium text-purple-600">{milestonesCompleted}</span>
+              </div>
+            </div>
           </button>
         </div>
+        
         <button
           onClick={() => onNavigate('emergency')}
-          className="p-2 rounded-full bg-amber-100 text-amber-700 hover:bg-amber-200"
+          className="p-3 rounded-full bg-amber-100 text-amber-700 hover:bg-amber-200 transition-colors shadow-sm"
         >
           <AlertTriangle className="w-5 h-5" />
         </button>
