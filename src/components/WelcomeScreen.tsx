@@ -1,99 +1,202 @@
-import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Users, GraduationCap, Store, BarChart3, Shield } from 'lucide-react';
+
+import { useState } from 'react';
+import { Flower2, Shield, Heart, Wallet, MapPin, Lock, CheckCircle, ArrowRight } from 'lucide-react';
 
 interface WelcomeScreenProps {
   onSetupComplete: () => void;
 }
 
 export const WelcomeScreen = ({ onSetupComplete }: WelcomeScreenProps) => {
-  const userTypes = [
-    {
-      id: 'issuer',
-      title: 'Scholarship Issuer',
-      description: 'Government, DAO, or CSR Organization',
-      icon: Users,
-      color: 'indigo'
-    },
-    {
-      id: 'student', 
-      title: 'Student',
-      description: 'Receive and manage scholarship vouchers',
-      icon: GraduationCap,
-      color: 'violet'
-    },
-    {
-      id: 'vendor',
-      title: 'Vendor',
-      description: 'Bookstore, Transport, Education Provider',
-      icon: Store,
-      color: 'emerald'
-    },
-    {
-      id: 'audit',
-      title: 'Public Audit',
-      description: 'View transparent scholarship distribution',
-      icon: BarChart3,
-      color: 'slate'
-    }
-  ];
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
+  const [userName] = useState('Sarah');
+
+  const handleVerifyClick = () => {
+    console.log('Starting SafeID verification...');
+    setIsVerifying(true);
+    
+    setTimeout(() => {
+      setIsVerifying(false);
+      setIsVerified(true);
+    }, 2000);
+  };
+
+  const handleSetupChoice = (choice: string) => {
+    console.log('User chose:', choice);
+    onSetupComplete();
+  };
+
+  if (isVerified) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-rose-50 to-amber-50 flex items-center justify-center p-6">
+        <div className="max-w-2xl w-full">
+          {/* Success Header */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-purple-400 to-rose-400 mb-6 shadow-lg">
+              <CheckCircle className="w-8 h-8 text-white" />
+            </div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-rose-500 bg-clip-text text-transparent mb-4">
+              Welcome to Your Sanctuary, {userName}
+            </h1>
+            <p className="text-lg text-gray-600 max-w-md mx-auto">
+              You now have a private financial identity. This is your space — safe, silent, yours alone.
+            </p>
+          </div>
+
+          {/* Setup Options */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <button
+              onClick={() => handleSetupChoice('wallet')}
+              className="bg-white/60 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-purple-200/50 hover:border-purple-400 hover:shadow-xl transition-all duration-200 text-left group"
+            >
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-r from-purple-400 to-purple-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                <Wallet className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Set Up My Wallet</h3>
+              <p className="text-sm text-gray-600 mb-4">Initialize gasless USDC wallet for receiving funds</p>
+              <div className="flex items-center text-purple-600 group-hover:text-purple-700">
+                <span className="text-sm font-medium">Get started</span>
+                <ArrowRight className="w-4 h-4 ml-1" />
+              </div>
+            </button>
+
+            <button
+              onClick={() => handleSetupChoice('recovery')}
+              className="bg-white/60 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-rose-200/50 hover:border-rose-400 hover:shadow-xl transition-all duration-200 text-left group"
+            >
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-r from-rose-400 to-rose-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                <MapPin className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Choose My Recovery Path</h3>
+              <p className="text-sm text-gray-600 mb-4">Therapy, learning, shelter, micro-jobs aligned with your goals</p>
+              <div className="flex items-center text-rose-600 group-hover:text-rose-700">
+                <span className="text-sm font-medium">Explore options</span>
+                <ArrowRight className="w-4 h-4 ml-1" />
+              </div>
+            </button>
+
+            <button
+              onClick={() => handleSetupChoice('safety')}
+              className="bg-white/60 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-amber-200/50 hover:border-amber-400 hover:shadow-xl transition-all duration-200 text-left group"
+            >
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-r from-amber-400 to-amber-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                <Lock className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Learn How to Keep Safe</h3>
+              <p className="text-sm text-gray-600 mb-4">Configure panic button, trusted contacts & account protection</p>
+              <div className="flex items-center text-amber-600 group-hover:text-amber-700">
+                <span className="text-sm font-medium">Setup protection</span>
+                <ArrowRight className="w-4 h-4 ml-1" />
+              </div>
+            </button>
+          </div>
+
+          {/* Trust Indicators */}
+          <div className="bg-white/60 backdrop-blur-sm rounded-xl shadow-lg border border-purple-100 p-6">
+            <h4 className="font-semibold text-gray-900 mb-4 flex items-center">
+              <Shield className="w-5 h-5 text-purple-500 mr-2" />
+              Your Data is Protected
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 rounded-full bg-green-400"></div>
+                <span className="text-gray-600">End-to-end encryption</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 rounded-full bg-green-400"></div>
+                <span className="text-gray-600">Zero-knowledge verification</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 rounded-full bg-green-400"></div>
+                <span className="text-gray-600">Self-custody wallet</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
-      <div className="max-w-4xl w-full space-y-8">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-rose-50 to-amber-50 flex items-center justify-center p-6">
+      <div className="max-w-md w-full">
         {/* Header */}
-        <div className="text-center space-y-4">
-          <div className="flex items-center justify-center space-x-3 mb-6">
-            <Shield className="h-12 w-12 text-indigo-600" />
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
-              ScholarFlow
-            </h1>
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-purple-400 to-rose-400 mb-6 shadow-lg">
+            <Flower2 className="w-8 h-8 text-white" />
           </div>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Web3 Scholarship Distribution Platform on IOTA Blockchain
-          </p>
-          <p className="text-sm text-slate-500">
-            Purpose-bound vouchers • Verified identities • Transparent audit trail
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-rose-500 bg-clip-text text-transparent mb-4">
+            Welcome to MIRA
+          </h1>
+          <p className="text-lg text-gray-600">
+            Create your secure digital identity to access financial support and rebuild your future.
           </p>
         </div>
 
-        {/* User Type Selection */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {userTypes.map((type) => (
-            <Card key={type.id} className="relative overflow-hidden border-2 hover:border-indigo-200 transition-all duration-300 cursor-pointer group hover:shadow-lg">
-              <CardHeader className="text-center">
-                <div className={`mx-auto w-16 h-16 rounded-full bg-${type.color}-100 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                  <type.icon className={`h-8 w-8 text-${type.color}-600`} />
-                </div>
-                <CardTitle className="text-lg">{type.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-center text-sm">
-                  {type.description}
-                </CardDescription>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        {/* Verification Card */}
+        <div className="bg-white/60 backdrop-blur-sm rounded-xl shadow-lg border border-purple-200/50 p-8 mb-6">
+          <div className="text-center mb-6">
+            <div className="flex items-center justify-center space-x-2 mb-4">
+              <Shield className="w-5 h-5 text-purple-600" />
+              <span className="text-sm text-gray-600 font-medium">Secure Identity Verification</span>
+            </div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              SafeID Creation
+            </h2>
+            <p className="text-gray-600 text-sm">
+              We'll verify your information securely. Your privacy is our priority.
+            </p>
+          </div>
 
-        {/* Demo Access */}
-        <div className="text-center space-y-4">
-          <p className="text-sm text-slate-500">
-            Demo Mode • Explore all features
-          </p>
-          <Button 
-            onClick={onSetupComplete}
-            className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white px-8 py-3 rounded-lg text-lg font-semibold"
+          <button
+            onClick={handleVerifyClick}
+            disabled={isVerifying}
+            className="w-full bg-gradient-to-r from-purple-500 to-rose-500 hover:from-purple-600 hover:to-rose-600 disabled:from-purple-400 disabled:to-rose-400 text-white py-3 px-6 rounded-lg font-medium transition-all duration-200 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
           >
-            Enter Student Wallet
-          </Button>
+            {isVerifying ? (
+              <span className="flex items-center justify-center">
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
+                Verifying securely...
+              </span>
+            ) : (
+              'Create SafeID'
+            )}
+          </button>
         </div>
 
-        {/* IOTA Branding */}
-        <div className="text-center">
-          <p className="text-xs text-slate-400">
-            Powered by IOTA • DID • CLT • Notarization
+        {/* Security Features */}
+        <div className="bg-white/60 backdrop-blur-sm rounded-xl shadow-lg border border-purple-100 p-6">
+          <h4 className="font-semibold text-gray-900 mb-4">Why MIRA is Different</h4>
+          <div className="space-y-3">
+            <div className="flex items-start space-x-3">
+              <div className="w-2 h-2 rounded-full bg-green-400 mt-2"></div>
+              <div>
+                <div className="font-medium text-gray-900 text-sm">Privacy First</div>
+                <div className="text-xs text-gray-600">Your information stays completely private</div>
+              </div>
+            </div>
+            <div className="flex items-start space-x-3">
+              <div className="w-2 h-2 rounded-full bg-green-400 mt-2"></div>
+              <div>
+                <div className="font-medium text-gray-900 text-sm">Self-Custody</div>
+                <div className="text-xs text-gray-600">You maintain full control of your funds</div>
+              </div>
+            </div>
+            <div className="flex items-start space-x-3">
+              <div className="w-2 h-2 rounded-full bg-green-400 mt-2"></div>
+              <div>
+                <div className="font-medium text-gray-900 text-sm">Progress Tracking</div>
+                <div className="text-xs text-gray-600">Build verifiable credentials at your own pace</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Encouragement */}
+        <div className="mt-8 text-center">
+          <Heart className="w-4 h-4 text-rose-400 mx-auto mb-2" />
+          <p className="text-xs text-gray-500">
+            Every journey begins with a single step
           </p>
         </div>
       </div>
