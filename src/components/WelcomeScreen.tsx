@@ -137,14 +137,14 @@ export const WelcomeScreen = ({ onSetupComplete }: WelcomeScreenProps) => {
         <div className="bg-white/60 backdrop-blur-sm rounded-xl shadow-lg border border-purple-200/50 p-8 mb-6">
           <div className="text-center mb-6">
             <div className="flex items-center justify-center space-x-2 mb-4">
-              <Shield className="w-5 h-5 text-purple-600" />
-              <span className="text-sm text-gray-600 font-medium">Secure Identity Verification</span>
+              <Wallet className="w-5 h-5 text-purple-600" />
+              <span className="text-sm text-gray-600 font-medium">IOTA Wallet Connection</span>
             </div>
             <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              Scholar ID Verification
+              Connect IOTA Wallet
             </h2>
             <p className="text-gray-600 text-sm">
-              Create your IOTA Identity (DID) for secure, privacy-preserving access to scholarships.
+              Connect your IOTA wallet to access decentralized scholarships and manage CLT vouchers securely.
             </p>
           </div>
 
@@ -156,10 +156,10 @@ export const WelcomeScreen = ({ onSetupComplete }: WelcomeScreenProps) => {
             {isVerifying ? (
               <span className="flex items-center justify-center">
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
-                Verifying securely...
+                Connecting to IOTA...
               </span>
             ) : (
-              'Create Scholar ID'
+              'Connect IOTA Wallet'
             )}
           </button>
         </div>
